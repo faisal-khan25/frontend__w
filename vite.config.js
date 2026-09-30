@@ -19,11 +19,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: "http://localhost:8080",
+        target: "https://backend-w-6hj2.onrender.com",
         changeOrigin: true,
       },
       "/socket.io": {
-        target: "http://localhost:8080",
+        target: "https://backend-w-6hj2.onrender.com",
         changeOrigin: true,
         ws: true,
         configure: (proxy) => {
