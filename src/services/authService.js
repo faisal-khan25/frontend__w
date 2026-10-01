@@ -136,3 +136,37 @@ export async function resetPassword({ resetToken, newPassword, confirmPassword }
   });
   return data; 
 }
+
+
+// Change password for the logged-in user (Settings > Change Password).
+// Login is Firebase-based, so for users with a Firebase email/password session
+// the password must be changed in Firebase. Users without one (legacy accounts
+// that only have a password stored in the HRMS database) use the existing
+// backend endpoint: POST /profile/change-password.
+export async function changePassword({ currentPassword, newPassword, confirmPassword }) {
+  const fb = await loadFirebaseAuthService();
+
+  if (fb.hasFirebasePasswordSession()) {
+    try {
+      await fb.changeFirebasePassword(currentPassword, newPassword);
+    } catch (error) {
+      const wrongPassword = ["auth/wrong-password", "auth/invalid-credential"].includes(error?.code);
+      const err = new Error(
+        wrongPassword ? "Current password is incorrect" : fb.getFirebaseErrorMessage(error)
+      );
+      err.friendlyMessage = err.message;
+      err.code = error?.code;
+      throw err;
+    }
+    return { success: true, message: "Password changed successfully" };
+  }
+
+  const { changePassword: changePasswordApi } = await import("./profileService");
+  try {
+    return await changePasswordApi({ currentPassword, newPassword, confirmPassword });
+  } catch (error) {
+    const msg = error.response?.data?.error;
+    if (msg) error.friendlyMessage = msg;
+    throw error;
+  }
+}

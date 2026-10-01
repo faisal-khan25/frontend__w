@@ -100,7 +100,7 @@ export default function TopHeader({ user, onMenuClick }) {
 
   function goToProfile() {
     setDropdownOpen(false);
-    document.getElementById("profile")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    navigate("/hrms/profile");
   }
 
   const displayName = user?.name || "";
@@ -165,7 +165,7 @@ export default function TopHeader({ user, onMenuClick }) {
               <button
                 onClick={() => {
                   setDropdownOpen(false);
-                  navigate("/forgot-password");
+                  navigate("/hrms/settings?section=password");
                 }}
                 className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-ink hover:bg-primary-50 text-left"
               >

@@ -5,6 +5,9 @@ import {
   GoogleAuthProvider,
   signOut,
   sendPasswordResetEmail,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
 } from "firebase/auth";
 import { auth } from "./firebase";
 
@@ -31,6 +34,8 @@ export function getFirebaseErrorMessage(error) {
       return "Invalid email or password";
     case "auth/user-disabled":
       return "This account has been disabled. Contact your administrator";
+    case "auth/requires-recent-login":
+      return "Please sign in again before changing your password";
     case "auth/too-many-requests":
       return "Too many attempts. Please wait a moment and try again";
     case "auth/network-request-failed":
@@ -83,4 +88,22 @@ export function sendReset(email) {
 
 export function getIdToken(user, forceRefresh = false) {
   return user.getIdToken(forceRefresh);
+}
+
+
+// True when the signed-in Firebase user authenticates with email + password
+// (i.e. has a password that can be changed from the client).
+export function hasFirebasePasswordSession() {
+  const user = auth.currentUser;
+  return Boolean(
+    user?.email && user.providerData?.some((p) => p.providerId === "password")
+  );
+}
+
+// Re-authenticates with the current password, then sets the new one.
+export async function changeFirebasePassword(currentPassword, newPassword) {
+  const user = auth.currentUser;
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+  await reauthenticateWithCredential(user, credential);
+  await updatePassword(user, newPassword);
 }

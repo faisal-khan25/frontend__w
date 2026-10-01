@@ -49,7 +49,7 @@ import { formatDateTime as formatDateTimeUtil } from "../../utils/date";
 
 const LEGEND_TYPES = EVENT_TYPES.filter((t) => t !== "ATTENDANCE");
 
-export default function CalendarPage() {
+export default function CalendarPage({ embedded = false }) {
   const { role, user } = useAuth();
   const navigate        = useNavigate();
   const [params]        = useSearchParams();
@@ -230,9 +230,9 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className={embedded ? "" : "min-h-screen bg-canvas"}>
 
-      <header className="sticky top-0 z-10 bg-surface border-b border-line">
+      {!embedded && <header className="sticky top-0 z-10 bg-surface border-b border-line">
         <div className="container-page flex items-center gap-3 h-16">
           <button
             onClick={() => navigate(-1)}
@@ -249,9 +249,9 @@ export default function CalendarPage() {
             Signed in as {user?.name} ({role})
           </span>
         </div>
-      </header>
+      </header>}
 
-      <main className="container-page py-6 space-y-4">
+      <main className={embedded ? "space-y-4" : "container-page py-6 space-y-4"}>
 
         <CalendarToolbar
           viewMode={viewMode}

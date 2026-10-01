@@ -15,6 +15,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import * as profileService from "../../../services/profileService";
+import { changePassword as changePasswordRequest } from "../../../services/authService";
 
 const TABS = [
   { id: "personal", label: "Personal Info" },
@@ -650,11 +651,11 @@ function SecurityTab() {
     }
     setBusy(true);
     try {
-      await profileService.changePassword(form);
+      await changePasswordRequest(form);
       setOk(true);
       setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (e2) {
-      setErr(e2.response?.data?.error || "Unable to change password.");
+      setErr(e2.friendlyMessage || e2.response?.data?.error || "Unable to change password.");
     } finally {
       setBusy(false);
     }

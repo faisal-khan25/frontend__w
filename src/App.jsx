@@ -1,5 +1,5 @@
 import { useEffect, lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
   MessageSquare,
@@ -44,6 +44,18 @@ const EmployeeDashboard = lazy(() => import("./pages/dashboard/EmployeeDashboard
 const AdminDashboard = lazy(() => import("./pages/dashboard/AdminDashboard"));
 
 const HrmsCalendarPage = lazy(() => import("./pages/dashboard/CalendarPage"));
+
+const HrmsLayout = lazy(() => import("./components/hrms/layout/HrmsLayout"));
+const HrmsAttendancePage = lazy(() => import("./pages/hrms/AttendancePage"));
+const HrmsLeavePage = lazy(() => import("./pages/hrms/LeavePage"));
+const HrmsDocumentsPage = lazy(() => import("./pages/hrms/DocumentsPage"));
+const HrmsProfilePage = lazy(() => import("./pages/hrms/ProfilePage"));
+const HrmsHolidaysPage = lazy(() => import("./pages/hrms/HolidaysPage"));
+const HrmsTasksPage = lazy(() => import("./pages/hrms/TasksPage"));
+const HrmsPayrollPage = lazy(() => import("./pages/hrms/PayrollPage"));
+const HrmsNotificationsPage = lazy(() => import("./pages/hrms/NotificationsPage"));
+const HrmsCalendarModulePage = lazy(() => import("./pages/hrms/CalendarPage"));
+const HrmsSettingsPage = lazy(() => import("./pages/hrms/SettingsPage"));
 
 
 const WorkspaceLayout = lazy(() => import("./components/workspace/layout/WorkspaceLayout"));
@@ -208,14 +220,38 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      {/* Old dashboard URL kept so existing links/bookmarks still work. */}
       <Route
         path="/employee/dashboard"
         element={
           <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
-            <EmployeeDashboard />
+            <Navigate to="/hrms/dashboard" replace />
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/hrms"
+        element={
+          <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+            <HrmsLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<EmployeeDashboard />} />
+        <Route path="attendance" element={<HrmsAttendancePage />} />
+        <Route path="leave" element={<HrmsLeavePage />} />
+        <Route path="documents" element={<HrmsDocumentsPage />} />
+        <Route path="profile" element={<HrmsProfilePage />} />
+        <Route path="holidays" element={<HrmsHolidaysPage />} />
+        <Route path="calendar" element={<HrmsCalendarModulePage />} />
+        <Route path="tasks" element={<HrmsTasksPage />} />
+        <Route path="payroll" element={<HrmsPayrollPage />} />
+        <Route path="notifications" element={<HrmsNotificationsPage />} />
+        <Route path="settings" element={<HrmsSettingsPage />} />
+        <Route path="*" element={<Navigate to="dashboard" replace />} />
+      </Route>
 
       <Route
         path="/calendar"

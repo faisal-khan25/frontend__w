@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   LayoutGrid,
   UserCircle,
@@ -10,24 +10,27 @@ import {
   CalendarRange,
   ListChecks,
   Bell,
+  Wallet,
+  Settings,
   X,
 } from "lucide-react";
 
+// Every HRMS module has its own route under /hrms.
 const NAV_ITEMS = [
-  { id: "top", label: "Dashboard", icon: LayoutGrid, wired: true },
-  { id: "profile", label: "My Profile", icon: UserCircle, wired: true },
-  { id: "documents", label: "Documents", icon: FolderOpen, wired: true },
-  { id: "leave", label: "Leave", icon: Umbrella, wired: true, badgeKey: "pendingLeaves" },
-  { id: "attendance", label: "Attendance", icon: Clock, wired: true },
-  { id: "holidays", label: "Holiday Calendar", icon: CalendarDays, wired: true },
-  { id: "hrms-calendar", label: "Calendar", icon: CalendarRange, wired: true, path: "/calendar" },
-  { id: "tasks", label: "Tasks", icon: ListChecks, wired: true },
-  { id: "notifications", label: "Notifications", icon: Bell, wired: true, badgeKey: "unreadNotifications" },
+  { id: "dashboard", label: "Dashboard", icon: LayoutGrid, path: "/hrms/dashboard" },
+  { id: "attendance", label: "Attendance", icon: Clock, path: "/hrms/attendance" },
+  { id: "leave", label: "Leave", icon: Umbrella, path: "/hrms/leave", badgeKey: "pendingLeaves" },
+  { id: "documents", label: "My Documents", icon: FolderOpen, path: "/hrms/documents" },
+  { id: "profile", label: "Profile", icon: UserCircle, path: "/hrms/profile" },
+  { id: "holidays", label: "Holiday Calendar", icon: CalendarDays, path: "/hrms/holidays" },
+  { id: "calendar", label: "Calendar", icon: CalendarRange, path: "/hrms/calendar" },
+  { id: "tasks", label: "Tasks", icon: ListChecks, path: "/hrms/tasks" },
+  { id: "payroll", label: "Payroll", icon: Wallet, path: "/hrms/payroll" },
+  { id: "notifications", label: "Notifications", icon: Bell, path: "/hrms/notifications", badgeKey: "unreadNotifications" },
+  { id: "settings", label: "Settings", icon: Settings, path: "/hrms/settings" },
 ];
 
 export default function Sidebar({ open, onClose, badges = {} }) {
-  const navigate = useNavigate();
-
   useEffect(() => {
     if (!open) return;
     function handleKey(e) {
@@ -36,18 +39,6 @@ export default function Sidebar({ open, onClose, badges = {} }) {
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [open, onClose]);
-
-  function handleNavClick(item) {
-    if (item.disabled) return;
-    if (item.path) {
-      navigate(item.path);
-      onClose();
-      return;
-    }
-    const el = document.getElementById(item.id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    onClose();
-  }
 
   return (
     <>
@@ -77,17 +68,18 @@ export default function Sidebar({ open, onClose, badges = {} }) {
             const Icon = item.icon;
             const count = item.badgeKey ? badges[item.badgeKey] : undefined;
             return (
-              <button
+              <NavLink
                 key={item.id}
-                onClick={() => handleNavClick(item)}
-                disabled={item.disabled}
-                title={item.disabled ? "Not connected to a backend module yet" : undefined}
-                className={`w-full flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors
+                to={item.path}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `w-full flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors
                   ${
-                    item.disabled
-                      ? "text-faint cursor-not-allowed"
+                    isActive
+                      ? "bg-primary-50 text-primary-700"
                       : "text-ink hover:bg-primary-50 hover:text-primary-700"
-                  }`}
+                  }`
+                }
               >
                 <span className="flex items-center gap-3">
                   <Icon size={18} />
@@ -96,10 +88,7 @@ export default function Sidebar({ open, onClose, badges = {} }) {
                 {typeof count === "number" && count > 0 && (
                   <span className="badge-primary !px-2 !py-0.5 text-[11px]">{count}</span>
                 )}
-                {!item.wired && (
-                  <span className="text-[10px] uppercase tracking-wide text-faint">Soon</span>
-                )}
-              </button>
+              </NavLink>
             );
           })}
         </nav>

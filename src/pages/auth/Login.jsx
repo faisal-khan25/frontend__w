@@ -13,7 +13,7 @@ const ROLE_DASHBOARD_PATHS = {
   ADMIN: "/admin/dashboard",
   HR: "/hr/dashboard",
   MANAGER: "/manager/dashboard",
-  EMPLOYEE: "/employee/dashboard",
+  EMPLOYEE: "/hrms/dashboard",
 };
 
 function isValidEmail(value) {

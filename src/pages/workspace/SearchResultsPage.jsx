@@ -23,7 +23,7 @@ function getResultPath(item) {
     case "mail":      return `/workspace/mail?open=${item.id}`;
     case "drive":     return `/workspace/drive?open=${item.id}`;
     case "calendar":  return `/workspace/calendar?event=${item.id}`;
-    case "employees": return `/employee/dashboard`;
+    case "employees": return `/hrms/dashboard`;
     case "meetings":  return `/workspace/meet/${item.meta?.roomId || item.id}`;
     default:          return "/workspace";
   }
